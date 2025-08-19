@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Model checkpoints / large data (keep only final model)
+*.h5
+*.hdf5
+*.ckpt
+*.pth
+
+# If you want to keep your final trained model in GitHub:
+#   remove 'face_mask_model.h5' from here and only ignore other big files
+
+
+#dataset
+mask-detection-data/
