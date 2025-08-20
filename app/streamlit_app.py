@@ -5,13 +5,12 @@ import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
 from PIL import Image
-import os
 
 # Load model
 MODEL_PATH = "model/face_mask_model.h5"
 model = load_model(MODEL_PATH)
 
-# Preprocess function (moved here from utils.py)
+# Preprocess function
 def prepare_image(image, target_size=(128, 128)):
     image = image.convert("RGB")  # Ensure 3 channels
     image = np.array(image)
@@ -20,17 +19,12 @@ def prepare_image(image, target_size=(128, 128)):
     image = np.expand_dims(image, axis=0)  # Add batch dimension -> (1,128,128,3)
     return image
 
-
-# Prediction
+# Prediction function
 def predict_mask(image):
     processed_image = prepare_image(image, target_size=(128, 128))
-    prediction = model.predict(processed_image)[0]  # e.g., [0.9, 0.1]
-
-    # Get class label
-    class_index = int(np.argmax(prediction))   # force int
-    confidence = float(np.max(prediction) * 100)  # force Python float
-
-    label = "Mask" if class_index == 0 else "No Mask"
+    prediction = model.predict(processed_image)[0][0]  # single probability output
+    confidence = float(prediction * 100)  # convert to percentage
+    label = "Mask" if prediction >= 0.5 else "No Mask"
     return label, confidence
 
 # Streamlit UI
@@ -46,5 +40,10 @@ if uploaded_file is not None:
     label, confidence = predict_mask(image)
     st.subheader(f"Prediction: {label}")
     st.write(f"Confidence: {confidence:.2f}%")
+
+    if label == "Mask":
+        st.success("✅ The person in the image is wearing a mask.")
+    else:
+        st.error("❌ The person in the image is NOT wearing a mask.")
 
 st.markdown("---")
