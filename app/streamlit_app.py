@@ -23,9 +23,8 @@ def prepare_image(image, target_size=(128, 128)):
 def predict_mask(image):
     processed_image = prepare_image(image, target_size=(128, 128))
     prediction = model.predict(processed_image)[0][0]  # single probability output
-    confidence = float(prediction * 100)  # convert to percentage
     label = "Mask" if prediction >= 0.5 else "No Mask"
-    return label, confidence
+    return label
 
 # Streamlit UI
 st.title("😷 Face Mask Detection")
@@ -37,9 +36,8 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Image", use_container_width=True)
 
-    label, confidence = predict_mask(image)
+    label = predict_mask(image)
     st.subheader(f"Prediction: {label}")
-    st.write(f"Confidence: {confidence:.2f}%")
 
     if label == "Mask":
         st.success("✅ The person in the image is wearing a mask.")
